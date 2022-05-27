@@ -5,6 +5,7 @@ import { UpdateExcelDto } from './dto/update-excel.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 const xlsx = require('node-xlsx');
+const XLSXParser = require('xlsx-to-json');
 
 @Injectable()
 export class ExcelService {
@@ -21,7 +22,7 @@ export class ExcelService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} excel`;
+    return this.excelRepository.findOne(id);
   }
 
   update(id: number, updateExcelDto: UpdateExcelDto) {
@@ -34,15 +35,10 @@ export class ExcelService {
 
   analysis(file) {
     const filePath = file[0].path;
-    const sheets = xlsx.parse(filePath);
+    const sheets = xlsx.parse(filePath, {
+      '!merges': [{ s: { c: 0, r: 64 }, e: { c: 0, r: 66 } }],
+    });
     const sheetData = sheets[0].data;
-    const xlsxHeaderMap = {
-      username: '用户名',
-      age: '年龄',
-      sex: '性别',
-      idcard: '身份证号',
-      id: 'id',
-    };
     const dataList = [];
     sheetData.forEach((item, index) => {
       if (index === 0) return; // 去除标题栏
@@ -54,6 +50,16 @@ export class ExcelService {
         id: item[4],
       });
     });
+
+    dataList.forEach((item, index) => {
+      if (index === 0) return; // 去除标题栏
+      if (!item.username) {
+        const preItem = dataList[index - 1];
+        item.username = preItem['username'];
+      }
+    });
+
+    console.log(dataList, 'dataList');
 
     return dataList;
   }

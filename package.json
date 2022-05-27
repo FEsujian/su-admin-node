@@ -46,7 +46,8 @@
     "rxjs": "^7.2.0",
     "short-uuid": "^4.2.0",
     "swagger-ui-express": "^4.4.0",
-    "typeorm": "0.2.29"
+    "typeorm": "0.2.29",
+    "xlsx-to-json": "^0.3.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
