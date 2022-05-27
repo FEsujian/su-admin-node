@@ -11,9 +11,7 @@ import {
   Logger,
   HttpStatus,
 } from '@nestjs/common';
-
-const config = require('../../config');
-
+import config from '../../config';
 type myError = {
   readonly status: number;
   readonly statusCode?: number;
@@ -43,7 +41,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       : exceptionRes || '未知错误';
     const message: any = exception.message || '未知错误';
     // 不拦截swagger错误
-    if (String(request.url).startsWith('/' + config.doc.url)) return;
+    if (String(request.url).startsWith('/' + config.swagger.url)) return;
     // 不拦截favicon错误
     if (String(request.url).startsWith('/favicon.ico')) return;
     this.logger.error(

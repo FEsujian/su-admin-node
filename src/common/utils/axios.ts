@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-const config = require('../../config');
+import config from '../../config';
 interface MyAxiosRequestConfig extends AxiosRequestConfig {
   page?: Record<string, unknown>;
   sort?: Record<string, unknown>;

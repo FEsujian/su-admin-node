@@ -1,4 +1,6 @@
 import * as path from 'path';
+import { diskStorage } from 'multer';
+const shortid = require('short-uuid');
 
 module.exports = {
   cookie_key: 'nest',
@@ -9,7 +11,21 @@ module.exports = {
     port: 8088,
   },
   // 上传文件配置
-  upload: {},
+  upload: {
+    root: path.join(__dirname, '../uploads'),
+    storage: diskStorage({
+      destination: path.join(
+        __dirname,
+        `../uploads/${new Date().toLocaleDateString()}`,
+      ),
+      filename: (req, file, cb) => {
+        const _filename = shortid.generate();
+        const suffix = file.originalname.match(/[^.]+$/)[0];
+        const filename = `${_filename}.${suffix}`;
+        return cb(null, filename);
+      },
+    }),
+  },
   // 模板配置
   view: {},
   // 静态文件配置
