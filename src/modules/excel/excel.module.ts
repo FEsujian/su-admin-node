@@ -1,5 +1,5 @@
-import { FilesModule } from './../files/files.module';
 import { Excel } from './entities/excel.entity';
+import { Test } from './entities/test.entity';
 import { Module } from '@nestjs/common';
 import { ExcelService } from './excel.service';
 import { ExcelController } from './excel.controller';
@@ -13,8 +13,6 @@ import config from '../../config';
       dest: config.upload.root,
       storage: config.upload.storage,
     }),
-
-    FilesModule,
   ],
   controllers: [ExcelController],
   providers: [ExcelService],

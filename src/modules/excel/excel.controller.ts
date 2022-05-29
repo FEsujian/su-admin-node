@@ -32,6 +32,14 @@ export class ExcelController {
     return dataList;
   }
 
+  @Post('upload2')
+  @NoAuth()
+  @UseInterceptors(AnyFilesInterceptor())
+  importExcel2(@Body() body, @UploadedFiles() file: Express.Multer.File) {
+    console.log(file, 'file');
+    return true;
+  }
+
   @Post()
   create(@Body() createExcelDto: CreateExcelDto) {
     return this.excelService.create(createExcelDto);
