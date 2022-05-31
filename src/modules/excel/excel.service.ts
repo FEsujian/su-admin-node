@@ -14,6 +14,7 @@ export class ExcelService {
     private excelRepository: Repository<Excel>,
   ) {}
   create(createExcelDto: CreateExcelDto) {
+    console.log(createExcelDto, 'createExcelDto');
     return this.excelRepository.insert(createExcelDto);
   }
 
@@ -69,12 +70,13 @@ export class ExcelService {
     dataList.forEach((item, index) => {
       if (index === 0) return; // 去除标题栏
       const preItem = dataList[index - 1];
-      !item.name && preItem['name'];
-      !item.username && preItem['username'];
-      !item.password && preItem['password'];
-      !item.belong_company && preItem['belong_company'];
-      !item.belong_power_supply && preItem['belong_power_supply'];
-      !item.contacts && preItem['contacts'];
+      !item.name && (item.name = preItem['name']);
+      !item.username && (item.username = preItem['username']);
+      !item.password && (item.password = preItem['password']);
+      !item.belong_company && (item.belong_company = preItem['belong_company']);
+      !item.belong_power_supply &&
+        (item.belong_power_supply = preItem['belong_power_supply']);
+      !item.contacts && (item.contacts = preItem['contacts']);
     });
 
     console.log(dataList, 'dataList');

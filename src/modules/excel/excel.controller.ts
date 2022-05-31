@@ -26,9 +26,9 @@ export class ExcelController {
   @UseInterceptors(AnyFilesInterceptor())
   importExcel(@Body() body, @UploadedFiles() file: Express.Multer.File) {
     const dataList = this.excelService.analysis(file);
-    // dataList.forEach((v) => {
-    //   this.excelService.create(v);
-    // });
+    dataList.forEach((v) => {
+      this.excelService.create(v);
+    });
     return dataList;
   }
 
