@@ -8,11 +8,13 @@ import {
   Delete,
   UploadedFiles,
   UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import { ExcelService } from './excel.service';
 import { CreateExcelDto } from './dto/create-excel.dto';
 import { UpdateExcelDto } from './dto/update-excel.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 import { NoAuth } from 'src/common/decorator/noAuth.decorator';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 
@@ -47,8 +49,8 @@ export class ExcelController {
 
   @Get()
   @NoAuth()
-  findAll() {
-    return this.excelService.findAll();
+  findAll(@Req() request: Request) {
+    return this.excelService.findAll(request.query);
   }
 
   @Get(':id')
@@ -58,11 +60,13 @@ export class ExcelController {
   }
 
   @Patch(':id')
+  @NoAuth()
   update(@Param('id') id: string, @Body() updateExcelDto: UpdateExcelDto) {
     return this.excelService.update(+id, updateExcelDto);
   }
 
   @Delete(':id')
+  @NoAuth()
   remove(@Param('id') id: string) {
     return this.excelService.remove(+id);
   }

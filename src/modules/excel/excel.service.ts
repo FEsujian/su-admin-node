@@ -18,8 +18,10 @@ export class ExcelService {
     return this.excelRepository.insert(createExcelDto);
   }
 
-  findAll(): Promise<Excel[]> {
-    return this.excelRepository.find();
+  findAll(queryParams) {
+    console.log(queryParams, 'queryParams');
+    const qb = this.excelRepository.createQueryBuilder();
+    return qb.where(queryParams).getMany();
   }
 
   findOne(id: number) {
