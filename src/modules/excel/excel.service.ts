@@ -21,7 +21,11 @@ export class ExcelService {
   findAll(queryParams) {
     console.log(queryParams, 'queryParams');
     const qb = this.excelRepository.createQueryBuilder();
-    return qb.where(queryParams).getMany();
+    return qb
+      .skip(queryParams.pageSize * (queryParams.pageNum - 1))
+      .take(queryParams.pageSize)
+      .where(queryParams as Partial<Excel>)
+      .getMany();
   }
 
   findOne(id: number) {
