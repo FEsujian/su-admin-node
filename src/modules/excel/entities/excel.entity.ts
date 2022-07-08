@@ -1,6 +1,6 @@
 import { BaseEntity } from 'src/common/entity/index.entity';
 import { Entity, Column } from 'typeorm';
-@Entity('excel')
+@Entity('su_admin_excel')
 export class Excel extends BaseEntity {
   @Column()
   name: string; // 用户名称

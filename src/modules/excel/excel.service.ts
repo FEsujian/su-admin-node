@@ -2,10 +2,11 @@ import { Excel } from './entities/excel.entity';
 import { Injectable } from '@nestjs/common';
 import { CreateExcelDto } from './dto/create-excel.dto';
 import { UpdateExcelDto } from './dto/update-excel.dto';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 const xlsx = require('node-xlsx');
 const XLSXParser = require('xlsx-to-json');
+import page from '../../common/utils/page';
 
 @Injectable()
 export class ExcelService {
@@ -17,15 +18,43 @@ export class ExcelService {
     console.log(createExcelDto, 'createExcelDto');
     return this.excelRepository.insert(createExcelDto);
   }
-
-  findAll(queryParams) {
-    console.log(queryParams, 'queryParams');
+  async findByPage(queryParams) {
     const qb = this.excelRepository.createQueryBuilder();
-    return qb
-      .skip(queryParams.pageSize * (queryParams.pageNum - 1))
-      .take(queryParams.pageSize)
-      .where(queryParams as Partial<Excel>)
-      .getMany();
+    const pageHelper = {
+      pageNum: queryParams.pageNum,
+      pageSize: queryParams.pageSize,
+    };
+    const result = await page.findByPage(qb, pageHelper);
+    console.log(result, 'result');
+    return { queryParams };
+  }
+  async findAll(queryParams) {
+    const take = queryParams.pageSize || 10;
+    const skip = queryParams.pageNumber || 0;
+    const keyword = queryParams.keyword || '';
+    const [result, total] = await this.excelRepository.findAndCount({
+      where: {
+        name: Like('%' + keyword + '%'),
+      },
+      order: {
+        name: 'DESC',
+      },
+      take,
+      skip,
+    });
+    return {
+      data: result,
+      page: {
+        firstPage: true,
+        hasNextPage: true,
+        hasPreviousPage: false,
+        lastPage: false,
+        pageNum: skip,
+        pageSize: take,
+        pageTotal: 19,
+        total,
+      },
+    };
   }
 
   findOne(id: number) {

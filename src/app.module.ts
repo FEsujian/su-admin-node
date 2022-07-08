@@ -10,6 +10,8 @@ import config from './config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { FilesModule } from './modules/files/files.module';
+import { BaseModule } from './modules/base/base.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { FilesModule } from './modules/files/files.module';
     AuthModule,
     ExcelModule,
     FilesModule,
+    BaseModule,
+    UserModule,
   ],
   controllers: [],
   providers: [

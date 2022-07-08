@@ -13,10 +13,28 @@ import {
 import { ExcelService } from './excel.service';
 import { CreateExcelDto } from './dto/create-excel.dto';
 import { UpdateExcelDto } from './dto/update-excel.dto';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiExtension,
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiProduces,
+  ApiQuery,
+  ApiResponse,
+  ApiResponseProperty,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 import { NoAuth } from 'src/common/decorator/noAuth.decorator';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import {
+  ApiCommonResponse,
+  ApiPaginatedResponse,
+} from 'src/common/decorator/swagger.decorator';
+import { CommonResponseDto } from 'src/common/dto/common.dto';
 
 @Controller('excel')
 @ApiTags('处理Excel相关接口')
@@ -25,21 +43,49 @@ export class ExcelController {
 
   @Post('upload')
   @NoAuth()
+  @ApiOperation({
+    tags: ['获取用户信息'],
+    description: '获取用户信息',
+    deprecated: false,
+    requestBody: {
+      description: '1111',
+      content: {},
+      required: true,
+    },
+  })
+  @ApiBody({
+    // name: '请求参数',
+    description: '请求参数',
+    type: CreateExcelDto,
+  })
+  @ApiCommonResponse()
   @UseInterceptors(AnyFilesInterceptor())
-  importExcel(@Body() body, @UploadedFiles() file: Express.Multer.File) {
-    const dataList = this.excelService.analysis(file);
-    dataList.forEach((v) => {
-      this.excelService.create(v);
-    });
-    return dataList;
+  importExcel(
+    @Body() body: CreateExcelDto,
+    @UploadedFiles() file: Express.Multer.File,
+  ): any {
+    return {
+      a: 1,
+    };
+    // const dataList = this.excelService.analysis(file);
+    // dataList.forEach((v) => {
+    //   this.excelService.create(v);
+    // });
+    // return dataList;
   }
 
   @Post('upload2')
   @NoAuth()
   @UseInterceptors(AnyFilesInterceptor())
+  @ApiBody({
+    description: '请求参数',
+    type: CreateExcelDto,
+  })
   importExcel2(@Body() body, @UploadedFiles() file: Express.Multer.File) {
-    console.log(file, 'file');
-    return true;
+    return {
+      a: 1,
+      b: 2,
+    };
   }
 
   @Post()
@@ -49,8 +95,18 @@ export class ExcelController {
 
   @Get()
   @NoAuth()
+  @ApiOperation({
+    tags: ['获取用户信息'],
+    description: '获取用户信息',
+    deprecated: true,
+  })
+  // @ApiQuery({ name: 'id', description: '用户id', type: CreateExcelDto })
+  @ApiParam({ name: 'params', type: CreateExcelDto })
+  @ApiResponse({ description: '成功请求回来,其实就是200的描述', status: 200 })
+  @ApiOkResponse({ description: '成功请求回来' })
   findAll(@Req() request: Request) {
-    return this.excelService.findAll(request.query);
+    // return this.excelService.findAll(request.query);
+    return this.excelService.findByPage(request.query);
   }
 
   @Get(':id')

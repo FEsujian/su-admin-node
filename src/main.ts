@@ -4,19 +4,47 @@ import { getIPAdress } from './common/utils/os';
 import { Log4jsService } from '@quickts/nestjs-log4js';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { knife4jSetup } from 'nest-knife4j2';
 import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import config from './config';
+
 const chalk = require('chalk');
 declare const module: any;
 async function bootstrap() {
   const logger = new Log4jsService();
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger,
+    cors: true,
   });
-  const config: any = app.get(ConfigService)['internalConfig'];
+  if (config.swagger.enable) {
+    const options = new DocumentBuilder()
+      .setTitle(config.swagger.title)
+      .setDescription(config.swagger.description)
+      .setVersion(config.swagger.version)
+      .addBasicAuth()
+      .addBearerAuth()
+      .addCookieAuth()
+      .addApiKey()
+      .addSecurityRequirements('bearer')
+      .build();
+    const document = SwaggerModule.createDocument(app, options);
+    SwaggerModule.setup(config.swagger.url, app, document, {
+      swaggerOptions: config.swagger.swaggerOptions,
+    });
+    knife4jSetup(app, {
+      urls: [
+        {
+          name: config.swagger.title,
+          url: `/swagger-json`,
+          swaggerVersion: '3.0',
+          location: `/api-json`,
+        },
+      ],
+    });
+  }
   app.useGlobalInterceptors(
     new TimeoutInterceptor(),
     new TransformInterceptor(),
@@ -32,19 +60,6 @@ async function bootstrap() {
     origin: config.cors.origins,
     credentials: true,
   });
-
-  if (config.swagger.enable) {
-    const options = new DocumentBuilder()
-      .setTitle(config.swagger.title)
-      .setDescription(config.swagger.description)
-      .setVersion(config.swagger.version)
-      .addBearerAuth()
-      .build();
-    const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup(config.swagger.url, app, document, {
-      swaggerOptions: config.swagger.swaggerOptions,
-    });
-  }
 
   await app.listen(config.server.port);
   // 热重载
@@ -64,12 +79,12 @@ async function bootstrap() {
   console.log(chalk.green(`Docs at:`));
   console.log(
     `     - Local:   ${chalk.cyan(
-      `http://localhost:${config.server.port}/${config.swagger.url}`,
+      `http://localhost:${config.server.port}/doc.html`,
     )}`,
   );
   console.log(
     `     - Network: ${chalk.cyan(
-      `http://${getIPAdress()}:${config.server.port}/${config.swagger.url}`,
+      `http://${getIPAdress()}:${config.server.port}/doc.html`,
     )}`,
   );
 }

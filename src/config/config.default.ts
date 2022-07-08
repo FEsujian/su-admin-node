@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { diskStorage } from 'multer';
+import { SwaggerDocumentOptions } from '@nestjs/swagger';
 const shortid = require('short-uuid');
 
 module.exports = {
@@ -43,7 +44,7 @@ module.exports = {
   // CORS配置
   cors: {
     enable: true,
-    origins: ['http://localhost:*'],
+    origins: ['http://localhost:*', '*'],
   },
   // swagger配置
   swagger: {
@@ -53,14 +54,17 @@ module.exports = {
     description: 'NestJS Api文档',
     version: '1.0',
     swaggerOptions: {
+      deepScanRoutes: true,
       explorer: true,
       docExpansion: 'list',
       filter: true,
       showRequestDuration: true,
+      deepLinking: true,
+      validatorUrl: false,
       syntaxHighlight: {
         active: true,
         theme: 'default',
       },
-    },
+    } as SwaggerDocumentOptions,
   },
 };

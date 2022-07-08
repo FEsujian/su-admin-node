@@ -11,6 +11,14 @@ import { Observable, EMPTY } from 'rxjs';
 interface Response<T> {
   data: T;
 }
+/**
+ * 正常返回数据封装
+ *
+ * @export
+ * @class TransformInterceptor
+ * @implements {NestInterceptor<T, Response<T>>}
+ * @template T
+ */
 @Injectable()
 export class TransformInterceptor<T>
   implements NestInterceptor<T, Response<T>>
@@ -20,12 +28,19 @@ export class TransformInterceptor<T>
     context: ExecutionContext,
     next: CallHandler<T>,
   ): Observable<Response<T>> {
+    const IncomingMessage = context.getArgs()[0];
+    const ServerResponse = context.getArgs()[1];
+    const { method, statusCode, route } = IncomingMessage;
     return next.handle().pipe(
-      map((data) => {
+      map((datas: any) => {
+        const { data, page } = datas;
         return {
-          ok: 0,
-          statusCode: HttpStatus.OK,
-          data,
+          ok: true,
+          statusCode,
+          data: data || datas,
+          page,
+          method,
+          path: route.path,
           timestamp: new Date().toISOString(),
           message: 'Request Success',
         };

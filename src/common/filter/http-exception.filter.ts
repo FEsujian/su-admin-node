@@ -53,7 +53,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       }),
     );
     response.status(code).json({
-      ok: 0,
+      ok: false,
       statusCode: status,
       message: exceptionMessage,
       timestamp: new Date().toISOString(),
